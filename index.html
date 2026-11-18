@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NamePay — pay a name, not an address</title>
+<meta name="description" content="NamePay lets Agent ID holders send BNB or USDT to a human-readable .ai name instead of a wallet address. Payments go directly from sender to the name's owner in a single transaction — NamePay never holds funds.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">N</div>
+      <div>
+        <div class="brand-name">NamePay</div>
+        <div class="brand-tag">Pay a name, not an address.</div>
+      </div>
+    </div>
+    <div id="walletBar" class="wallet-bar">
+      <span id="accountChip" class="account-chip hidden"></span>
+      <button id="connectBtn" class="btn btn-primary" type="button">Connect wallet</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="stats-bar" aria-label="NamePay activity">
+      <div class="stat">
+        <span class="stat-num" id="statPayments">–</span>
+        <span class="stat-label">payments settled</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="statInteractors">–</span>
+        <span class="stat-label">Agent ID holders joined</span>
+      </div>
+      <div class="stat progress-stat">
+        <div class="progress-track" role="progressbar" aria-label="Progress toward 30 Agent ID holders" aria-valuemin="0" aria-valuemax="30" id="progressTrack">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <span class="stat-label" id="progressLabel">Loading activity…</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div id="noWallet" class="notice notice-warn hidden">
+    <strong>No Web3 wallet found.</strong>
+    Open this page inside the Binance Wallet app browser or another Web3 wallet
+    browser (with an injected wallet) to connect and use NamePay.
+  </div>
+
+  <div id="chainBanner" class="notice notice-warn hidden">
+    <span>You are connected to the wrong network. NamePay runs on BNB Smart Chain.</span>
+    <button id="switchChainBtn" class="btn btn-small" type="button">Switch to BNB Smart Chain</button>
+  </div>
+
+  <div id="contractNotice" class="notice notice-warn hidden">
+    The NamePay contract is not live yet at the configured address, so payments
+    are unavailable right now. Please check back once it is deployed.
+  </div>
+
+  <!-- Identity -->
+  <section class="card" id="identityCard">
+    <h2>Your Agent ID</h2>
+    <div id="identityDisconnected">
+      <p class="muted">Connect your wallet to see your Agent ID and start paying by name.</p>
+    </div>
+    <div id="identityHolder" class="hidden">
+      <div class="identity-handle" id="myHandle">—</div>
+      <div class="muted">Wallet <span id="myAddress" class="mono">—</span></div>
+      <p class="muted" id="interactedNote"></p>
+    </div>
+    <div id="identityNoId" class="hidden">
+      <p><strong>An Agent ID is required to use NamePay.</strong></p>
+      <p class="muted">
+        NamePay is built for Agent ID holders: your <span class="mono">.ai</span> name is your
+        payment address. The wallet you connected does not hold an Agent ID yet.
+        You can claim one in the Binance App — go to
+        <strong>Wallet → homepage banner → Agent ID</strong> — then come back and reconnect.
+      </p>
+      <p class="muted">Wallet <span id="myAddressNoId" class="mono">—</span></p>
+    </div>
+  </section>
+
+  <!-- Shared payment request (?req=<id>) -->
+  <section class="card accent hidden" id="reqPanel">
+    <h2>Payment request <span class="muted" id="reqPanelId"></span></h2>
+    <div id="reqPanelBody">
+      <p class="muted">Loading request…</p>
+    </div>
+    <div id="reqPanelActions" class="hidden">
+      <button id="reqPayBtn" class="btn btn-primary" type="button">Pay this request</button>
+    </div>
+    <div id="reqStatus" class="status" role="status"></div>
+  </section>
+
+  <!-- Pay by name -->
+  <section class="card">
+    <h2>Pay by name</h2>
+    <p class="muted">
+      Send BNB or USDT straight to someone's <span class="mono">.ai</span> name. The payment
+      goes directly from your wallet to the name's owner in one transaction.
+    </p>
+    <fieldset id="payFieldset">
+      <label>
+        Recipient's .ai name
+        <input id="payHandle" type="text" placeholder="e.g. ririn12 or ririn12.ai" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="muted small" id="resolveNote"></div>
+      <div class="row">
+        <label>
+          Asset
+          <select id="payAsset">
+            <option value="BNB">BNB</option>
+            <option value="USDT">USDT</option>
+          </select>
+        </label>
+        <label>
+          Amount
+          <input id="payAmount" type="text" inputmode="decimal" placeholder="0.01" autocomplete="off">
+        </label>
+      </div>
+      <label>
+        Memo <span class="muted">(optional, max 140 characters)</span>
+        <input id="payMemo" type="text" maxlength="140" placeholder="e.g. thanks for lunch" autocomplete="off">
+      </label>
+      <button id="payBtn" class="btn btn-primary" type="button">Send payment</button>
+      <div id="payStatus" class="status" role="status"></div>
+    </fieldset>
+  </section>
+
+  <!-- Payment requests -->
+  <section class="card">
+    <h2>Payment requests</h2>
+    <p class="muted">
+      Create a request under your own name and share the link — anyone holding an
+      Agent ID can settle it.
+    </p>
+    <fieldset id="createFieldset">
+      <div class="row">
+        <label>
+          Asset
+          <select id="reqAsset">
+            <option value="BNB">BNB</option>
+            <option value="USDT">USDT</option>
+          </select>
+        </label>
+        <label>
+          Amount
+          <input id="reqAmount" type="text" inputmode="decimal" placeholder="0.01" autocomplete="off">
+        </label>
+      </div>
+      <label>
+        Note <span class="muted">(optional, max 140 characters)</span>
+        <input id="reqNote" type="text" maxlength="140" placeholder="e.g. invoice for design work" autocomplete="off">
+      </label>
+      <button id="createBtn" class="btn btn-primary" type="button">Create request</button>
+      <div id="createStatus" class="status" role="status"></div>
+      <div id="createdLink" class="share-box hidden">
+        <span class="muted small">Share this link:</span>
+        <div class="share-row">
+          <input id="createdLinkInput" type="text" readonly>
+          <button id="copyCreatedBtn" class="btn btn-small" type="button">Copy</button>
+        </div>
+      </div>
+    </fieldset>
+
+    <h3>Requests you created</h3>
+    <div id="myRequests">
+      <p class="muted">Connect with an Agent ID wallet to see your requests.</p>
+    </div>
+  </section>
+
+  <!-- Recent payments -->
+  <section class="card">
+    <h2>Recent payments</h2>
+    <div id="feed">
+      <p class="muted">Loading…</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>
+      <strong>Please note:</strong> on-chain payments are final and cannot be reversed —
+      double-check the name and amount before sending. NamePay never holds funds:
+      every payment moves directly from the sender to the name's owner in a single
+      transaction, and the NamePay contract has no owner, no admin controls and no
+      way to move anyone's money.
+    </p>
+    <p class="muted">
+      NamePay runs on BNB Smart Chain and reads names from the Agent ID registry.
+      Contract: <a id="contractLink" href="#" target="_blank" rel="noopener" class="mono">—</a>
+    </p>
+  </footer>
+
+</main>
+
+<script src="ethers.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
