@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NamePay Demo — try paying a name in 30 seconds</title>
+<meta name="description" content="Try NamePay live: send a dust payment of 0.0001 BNB to the demo name ririn12.ai and watch your Agent ID name land on the public receipt wall.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">N</div>
+      <div>
+        <div class="brand-name">NamePay</div>
+        <div class="brand-tag">Pay a name, not an address.</div>
+      </div>
+    </div>
+    <div id="walletBar" class="wallet-bar">
+      <span id="accountChip" class="account-chip hidden"></span>
+      <button id="connectBtn" class="btn btn-primary" type="button">Connect wallet</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="stats-bar" aria-label="NamePay activity">
+      <div class="stat">
+        <span class="stat-num" id="statPayments">–</span>
+        <span class="stat-label">payments settled</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="statInteractors">–</span>
+        <span class="stat-label">Agent ID holders joined</span>
+      </div>
+      <div class="stat progress-stat">
+        <div class="progress-track" role="progressbar" aria-label="Progress toward 30 Agent ID holders" aria-valuemin="0" aria-valuemax="30" id="progressTrack">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <span class="stat-label" id="progressLabel">Loading activity…</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div id="noWallet" class="notice notice-warn hidden">
+    <strong>No Web3 wallet found.</strong>
+    You can still read the receipt wall below. To try the demo payment, open this
+    page inside the Binance Wallet app browser or another Web3 wallet browser.
+  </div>
+
+  <div id="chainBanner" class="notice notice-warn hidden">
+    <span>You are connected to the wrong network. NamePay runs on BNB Smart Chain.</span>
+    <button id="switchChainBtn" class="btn btn-small" type="button">Switch to BNB Smart Chain</button>
+  </div>
+
+  <!-- Demo -->
+  <section class="card">
+    <h2>Try NamePay in 30 seconds</h2>
+    <p class="muted">
+      Send a dust payment of <strong>0.0001 BNB</strong> to the demo name
+      <span class="mono">ririn12.ai</span>. It is a real on-chain payment that goes
+      directly from your wallet to the name's owner — NamePay never holds funds —
+      and your own Agent ID name lands on the public receipt wall below.
+    </p>
+
+    <div class="steps">
+      <div class="step"><span class="step-num">1</span><span>Connect a wallet that holds an Agent ID</span></div>
+      <div class="step"><span class="step-num">2</span><span>Confirm the dust payment in your wallet</span></div>
+      <div class="step"><span class="step-num">3</span><span>See your name on the wall and in the holder count</span></div>
+    </div>
+
+    <div id="identityDisconnected">
+      <p class="muted">Connect your wallet to run the demo.</p>
+    </div>
+    <div id="identityHolder" class="hidden">
+      <div class="identity-handle" id="myHandle">—</div>
+      <div class="muted">Wallet <span id="myAddress" class="mono">—</span></div>
+      <p class="muted" id="interactedNote"></p>
+    </div>
+    <div id="identityNoId" class="hidden">
+      <p><strong>An Agent ID is required to use NamePay.</strong></p>
+      <p class="muted">
+        The wallet you connected does not hold an Agent ID yet. You can claim one
+        in the Binance App — go to <strong>Wallet → homepage banner → Agent ID</strong> —
+        then come back and reconnect.
+      </p>
+      <p class="muted">Wallet <span id="myAddressNoId" class="mono">—</span></p>
+    </div>
+
+    <div class="demo-rows">
+      <div class="demo-row"><span class="muted">To</span><strong class="mono">ririn12.ai</strong><span class="muted small">(demo name)</span></div>
+      <div class="demo-row"><span class="muted">Amount</span><strong>0.0001 BNB</strong></div>
+      <div class="demo-row"><span class="muted">Memo</span><span>“Trying the NamePay demo”</span></div>
+    </div>
+
+    <button id="demoPayBtn" class="btn btn-primary" type="button">Connect wallet to try</button>
+    <div id="demoStatus" class="status" role="status"></div>
+
+    <p class="muted small">
+      On-chain payments are final and cannot be reversed — that is the point of
+      the demo. Want to pay a different name or amount instead?
+      <a href="index.html">Open the full NamePay app</a>.
+    </p>
+  </section>
+
+  <!-- Public receipt wall -->
+  <section class="card">
+    <h2>Public receipt wall</h2>
+    <p class="muted">
+      Every settled NamePay payment, read straight from the contract on BNB Smart
+      Chain. No wallet needed to view — this wall loads for everyone and refreshes
+      automatically.
+    </p>
+    <div id="wall">
+      <p class="muted">Loading…</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>
+      <strong>Please note:</strong> on-chain payments are final and cannot be reversed —
+      double-check the name and amount before sending. NamePay never holds funds:
+      every payment moves directly from the sender to the name's owner in a single
+      transaction, and the NamePay contract has no owner, no admin controls and no
+      way to move anyone's money.
+    </p>
+    <p class="muted">
+      NamePay runs on BNB Smart Chain and reads names from the Agent ID registry.
+      Contract: <a id="contractLink" href="#" target="_blank" rel="noopener" class="mono">—</a>
+    </p>
+  </footer>
+
+</main>
+
+<script src="ethers.umd.min.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>
