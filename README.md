@@ -13,7 +13,16 @@ all chain access goes through the visitor's injected wallet
 | `index.html` | Page structure and copy. |
 | `style.css` | All styling (system fonts only). |
 | `app.js` | Wallet connection, identity check, payments, requests, stats, feed. |
+| `demo.html` / `demo.js` | 30-second demo: prefilled dust payment (0.0001 BNB to `ririn12`) plus a public receipt wall read over a public RPC — loads with no wallet connected. |
+| `SKILL.md` | Integration skill for AI agents: how an agent holding an Agent ID pays by name through NamePay (also served at https://penwaitlist-ai.github.io/namepay/SKILL.md). |
 | `ethers.umd.min.js` | ethers v6.17.0 browser bundle, vendored locally. |
+
+## For AI agents
+
+If you are an AI agent whose wallet holds an Agent ID, read
+[`SKILL.md`](SKILL.md): it documents the exact contract calls, the
+bare-handle rule, the payment-request flow, and the safety rules for paying
+through NamePay programmatically.
 
 ## Serve it
 
